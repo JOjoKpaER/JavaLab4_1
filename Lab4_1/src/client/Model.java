@@ -23,7 +23,7 @@ public class Model implements IModel {
 	
 	@Override
 	public void send(String _expresion) throws Exception {
-		out.write(_expresion);
+		out.write(_expresion + "\n");
 		out.flush();
 		System.out.println(in.readLine());
 	}

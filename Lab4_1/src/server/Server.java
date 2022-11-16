@@ -23,13 +23,6 @@ public class Server {
 	
 	private void init(int _port) {
 		System.out.println("Serever init");
-		model = new ModelFactory().createInstance();
-		try {
-			model.init(out);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		try {
 			server = new ServerSocket(_port);
 			clientSocket = server.accept();
@@ -39,6 +32,13 @@ public class Server {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		model = new ModelFactory().createInstance();
+		try {
+			model.init(out);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		reciveLoop();
 	}
 	
@@ -47,17 +47,26 @@ public class Server {
 			try {
 				model.calc(in.readLine());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
-			if(onCloseCondition)
+				//e.printStackTrace();
+				onCloseCondition = true;
+			}
+			if(onCloseCondition) {
 				onClose();
 				break;
+			}
 		}
 	}
 	
 	private void onClose() {
-		
+		try {
+			clientSocket.close();
+			in.close();
+	        out.close();
+	        server.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }

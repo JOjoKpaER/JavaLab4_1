@@ -18,7 +18,7 @@ public class Model implements IModel {
 		
 }
 
-final class Calc extends Thread{
+class Calc extends Thread{
 	
 	private String expression;
 	private	BufferedWriter out;
@@ -31,7 +31,8 @@ final class Calc extends Thread{
 	@Override
 	public void run() {
 		try {
-			out.write(expression);
+			out.write(expression + "\n");
+			out.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
