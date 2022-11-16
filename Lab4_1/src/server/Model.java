@@ -30,12 +30,17 @@ class Calc extends Thread{
 	
 	@Override
 	public void run() {
+		String result;
 		try {
-			out.write(expression + "\n");
+			result = compute.Computing.StrCompute(expression);
+		} catch (Exception e1) {
+			result = e1.getMessage();
+		}
+		try {
+			out.write(result + "\n");
 			out.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Out stream for calculator closed");
 		}
 	}
 }

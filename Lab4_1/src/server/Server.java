@@ -11,48 +11,53 @@ import java.net.Socket;
 public class Server {
 
 	public boolean onCloseCondition = false;
-	private IModel model;
 	private Socket clientSocket;
 	private ServerSocket server;
 	private BufferedReader in;
 	private BufferedWriter out;
 	
+	private int port;
+	
 	public Server(int _port) {
-		init(_port);
+		port = _port;
+		init();
 	}
 	
-	private void init(int _port) {
+	private void init() {
 		System.out.println("Serever init");
-		try {
-			server = new ServerSocket(_port);
-			clientSocket = server.accept();
-			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		model = new ModelFactory().createInstance();
-		try {
-			model.init(out);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		reciveLoop();
 	}
 	
 	private void reciveLoop() {
 		while (true) {
 			try {
-				model.calc(in.readLine());
-			} catch (Exception e) {
-				//e.printStackTrace();
-				onCloseCondition = true;
-			}
-			if(onCloseCondition) {
+				server = new ServerSocket(port);
+				clientSocket = server.accept();
+				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+				out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+			} catch (IOException e1) {
+				System.out.println("Couldn't the set socket in accept state");
+				e1.printStackTrace();
 				onClose();
 				break;
+			}
+			IModel model = new ModelFactory().createInstance();
+			try {
+				model.init(out);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			while (true) {
+				try {
+					model.calc(in.readLine());
+				} catch (Exception e) {
+					//e.printStackTrace();
+					onCloseCondition = true;
+				}
+				if(onCloseCondition) {
+					onClose();
+					break;
+				}
 			}
 		}
 	}
@@ -64,7 +69,7 @@ public class Server {
 	        out.close();
 	        server.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Couldn't close the socket");
 			e.printStackTrace();
 		}
 	}
